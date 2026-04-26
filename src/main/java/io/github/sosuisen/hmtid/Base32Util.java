@@ -1,7 +1,5 @@
 package io.github.sosuisen.hmtid;
 
-import java.util.function.DoubleSupplier;
-
 final class Base32Util {
     private Base32Util() {}
 
