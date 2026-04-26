@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.DoubleSupplier;
@@ -157,50 +158,50 @@ class HmtidTest {
     class Generator {
         @Test
         void shouldReturnCorrectLength() {
-            var gen = Hmtid.monotonicFactory();
-            assertEquals(22, gen.generate().length());
+            var gen = HMTID.monotonicFactory();
+            assertEquals(22, gen.generate().toString().length());
         }
 
         @Test
         void shouldReturnCorrectLengthWhenSeparatorIsHyphen() {
-            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
-            assertEquals(22, gen.generate().length());
+            var gen = HMTID.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
+            assertEquals(22, gen.generate().toString().length());
         }
 
         @Test
         void shouldUseHyphenAsSeparatorBetweenTimestampAndRandomComponent() {
-            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
-            assertEquals("20211015070216-", gen.generate(1634281336026L).substring(0, 15));
+            var gen = HMTID.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
+            assertEquals("20211015070216-", gen.generate(1634281336026L).toString().substring(0, 15));
         }
 
         @Test
         void shouldReturnCorrectLengthWhenSeparatedByHyphenWithTimeSeparation() {
-            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
-            assertEquals(27, gen.generate().length());
+            var gen = HMTID.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
+            assertEquals(27, gen.generate().toString().length());
         }
 
         @Test
         void shouldReturnExpectedTimeComponentResult() {
-            var gen = Hmtid.monotonicFactory();
-            assertEquals("20211015070216_", gen.generate(1634281336026L).substring(0, 15));
+            var gen = HMTID.monotonicFactory();
+            assertEquals("20211015070216_", gen.generate(1634281336026L).toString().substring(0, 15));
         }
 
         @Test
         void shouldReturnExpectedTimeComponentSeparatedByHyphen() {
-            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
-            assertEquals("2021-10-15-07-02-16-", gen.generate(1634281336026L).substring(0, 20));
+            var gen = HMTID.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
+            assertEquals("2021-10-15-07-02-16-", gen.generate(1634281336026L).toString().substring(0, 20));
         }
 
         @Test
         void shouldReturnExpectedTimeComponentSeparatedByUnderbar() {
-            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '_', true);
-            assertEquals("2021_10_15_07_02_16_", gen.generate(1634281336026L).substring(0, 20));
+            var gen = HMTID.monotonicFactory(new SecureRandom()::nextDouble, '_', true);
+            assertEquals("2021_10_15_07_02_16_", gen.generate(1634281336026L).toString().substring(0, 20));
         }
 
         @Test
         void shouldGenerateIdsInMonotonicallyIncreasingOrder() {
-            var gen = Hmtid.monotonicFactory();
-            var ids = new ArrayList<String>();
+            var gen = HMTID.monotonicFactory();
+            var ids = new ArrayList<HMTID>();
             for (int i = 0; i < 100; i++) {
                 ids.add(gen.generate());
             }
@@ -214,12 +215,12 @@ class HmtidTest {
     class MonotonicityWithoutSeedTime {
         @Test
         void callSequenceWithFrozenTime() {
-            var gen = Hmtid.monotonicFactory(() -> 0.96);
+            var gen = HMTID.monotonicFactory(() -> 0.96);
             var time = 1634282804081L; // 2021-10-15 07:26:44 UTC
-            assertEquals("20211015072644_YYYYYYY", gen.generate(time)); // first
-            assertEquals("20211015072644_YYYYYYZ", gen.generate(time)); // second
-            assertEquals("20211015072644_YYYYYZ0", gen.generate(time)); // third
-            assertEquals("20211015072644_YYYYYZ1", gen.generate(time)); // fourth
+            assertEquals("20211015072644_YYYYYYY", gen.generate(time).toString()); // first
+            assertEquals("20211015072644_YYYYYYZ", gen.generate(time).toString()); // second
+            assertEquals("20211015072644_YYYYYZ0", gen.generate(time).toString()); // third
+            assertEquals("20211015072644_YYYYYZ1", gen.generate(time).toString()); // fourth
         }
     }
 
@@ -227,19 +228,19 @@ class HmtidTest {
     class MonotonicityWithSeedTime {
         @Test
         void callSequenceWithVariousSeedTimes() {
-            var gen = Hmtid.monotonicFactory(() -> 0.96);
+            var gen = HMTID.monotonicFactory(() -> 0.96);
             // first call — new second
-            assertEquals("20160730223616_YYYYYYY", gen.generate(1469918176385L));
+            assertEquals("20160730223616_YYYYYYY", gen.generate(1469918176385L).toString());
             // second call with the same time — increment
-            assertEquals("20160730223616_YYYYYYZ", gen.generate(1469918176385L));
+            assertEquals("20160730223616_YYYYYYZ", gen.generate(1469918176385L).toString());
             // third call with time less than lastTime — still same second
-            assertEquals("20160730223616_YYYYYZ0", gen.generate(100000000L));
+            assertEquals("20160730223616_YYYYYZ0", gen.generate(100000000L).toString());
             // fourth call with even smaller time — still same second
-            assertEquals("20160730223616_YYYYYZ1", gen.generate(10000L));
+            assertEquals("20160730223616_YYYYYZ1", gen.generate(10000L).toString());
             // fifth call with 1ms greater, still same second
-            assertEquals("20160730223616_YYYYYZ2", gen.generate(1469918176386L));
+            assertEquals("20160730223616_YYYYYZ2", gen.generate(1469918176386L).toString());
             // sixth call with 1000ms greater — new second, fresh random
-            assertEquals("20160730223617_YYYYYYY", gen.generate(1469918177385L));
+            assertEquals("20160730223617_YYYYYYY", gen.generate(1469918177385L).toString());
         }
     }
 
@@ -247,23 +248,175 @@ class HmtidTest {
     class ForceIncrementSeedTime {
         @Test
         void overflowAdvancesTimestampByOneSecond() {
-            var gen = Hmtid.monotonicFactory(() -> 0.99);
+            var gen = HMTID.monotonicFactory(() -> 0.99);
             // 1st call — new second, random fills with Z
-            assertEquals("20160730223616_ZZZZZZZ", gen.generate(1469918176385L));
+            assertEquals("20160730223616_ZZZZZZZ", gen.generate(1469918176385L).toString());
             // 2nd call same time — MAX_RANDOM overflow, advance 1 sec
-            assertEquals("20160730223617_0000000", gen.generate(1469918176385L));
+            assertEquals("20160730223617_0000000", gen.generate(1469918176385L).toString());
             // 3rd call with very old time — overflowedTime clamps it
-            assertEquals("20160730223617_0000001", gen.generate(100000000L));
+            assertEquals("20160730223617_0000001", gen.generate(100000000L).toString());
             // 4th call with tiny time — still clamped
-            assertEquals("20160730223617_0000002", gen.generate(10000L));
+            assertEquals("20160730223617_0000002", gen.generate(10000L).toString());
             // 5th call 1ms after original — still in overflowed second
-            assertEquals("20160730223617_0000003", gen.generate(1469918176386L));
+            assertEquals("20160730223617_0000003", gen.generate(1469918176386L).toString());
             // 6th call 1000ms after original — still in overflowed second
-            assertEquals("20160730223617_0000004", gen.generate(1469918177385L));
+            assertEquals("20160730223617_0000004", gen.generate(1469918177385L).toString());
             // 7th call 1001ms after original — still in overflowed second
-            assertEquals("20160730223617_0000005", gen.generate(1469918177386L));
+            assertEquals("20160730223617_0000005", gen.generate(1469918177386L).toString());
             // 8th call 2000ms after original — new second, fresh Z random
-            assertEquals("20160730223618_ZZZZZZZ", gen.generate(1469918178385L));
+            assertEquals("20160730223618_ZZZZZZZ", gen.generate(1469918178385L).toString());
+        }
+    }
+
+    @Nested
+    class HmtidType {
+        @Test
+        void constructorSetsFields() {
+            var instant = Instant.parse("2021-10-15T07:26:44Z");
+            var id = new HMTID("20211015072644_YYYYYYY", instant, "YYYYYYY");
+            assertEquals("20211015072644_YYYYYYY", id.toString());
+            assertEquals(instant, id.toInstant());
+            assertEquals("YYYYYYY", id.getRandomPart());
+        }
+
+        @Test
+        void ofParsesCompactFormatWithUnderscore() {
+            var id = HMTID.of("20211015072644_YYYYYYY");
+            assertEquals(Instant.parse("2021-10-15T07:26:44Z"), id.toInstant());
+            assertEquals("YYYYYYY", id.getRandomPart());
+            assertEquals("20211015072644_YYYYYYY", id.toString());
+        }
+
+        @Test
+        void ofParsesCompactFormatWithHyphen() {
+            var id = HMTID.of("20211015072644-YYYYYYY");
+            assertEquals(Instant.parse("2021-10-15T07:26:44Z"), id.toInstant());
+            assertEquals("YYYYYYY", id.getRandomPart());
+            assertEquals("20211015072644-YYYYYYY", id.toString());
+        }
+
+        @Test
+        void ofParsesSeparatedFormatWithUnderscore() {
+            var id = HMTID.of("2021_10_15_07_26_44_YYYYYYY");
+            assertEquals(Instant.parse("2021-10-15T07:26:44Z"), id.toInstant());
+            assertEquals("YYYYYYY", id.getRandomPart());
+            assertEquals("2021_10_15_07_26_44_YYYYYYY", id.toString());
+        }
+
+        @Test
+        void ofParsesSeparatedFormatWithHyphen() {
+            var id = HMTID.of("2021-10-15-07-26-44-YYYYYYY");
+            assertEquals(Instant.parse("2021-10-15T07:26:44Z"), id.toInstant());
+            assertEquals("YYYYYYY", id.getRandomPart());
+            assertEquals("2021-10-15-07-26-44-YYYYYYY", id.toString());
+        }
+
+        @Test
+        void ofThrowsOnWrongLength() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("20211015072644_YYYYYYY_extra"));
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("short"));
+        }
+
+        @Test
+        void ofThrowsOnInvalidSeparatorInCompactFormat() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("20211015072644@YYYYYYY"));
+        }
+
+        @Test
+        void ofThrowsOnInvalidSeparatorInSeparatedFormat() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("2021@10@15@07@26@44@YYYYYYY"));
+        }
+
+        @Test
+        void ofThrowsOnInconsistentSeparators() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("2021_10-15_07_26_44_YYYYYYY"));
+        }
+
+        @Test
+        void ofThrowsOnInvalidDate() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("20211315072644_YYYYYYY")); // month=13
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("2021_13_15_07_26_44_YYYYYYY")); // month=13
+        }
+
+        @Test
+        void ofThrowsOnInvalidRandomPart() {
+            assertThrows(IllegalArgumentException.class, () -> HMTID.of("20211015072644_IOUYYYY")); // I, O, U invalid
+        }
+
+        @Test
+        void equalityIgnoresSeparatorFormat() {
+            var compact   = HMTID.of("20211015072644_YYYYYYY");
+            var separated = HMTID.of("2021_10_15_07_26_44_YYYYYYY");
+            var hyphen    = HMTID.of("20211015072644-YYYYYYY");
+            var hyphenSep = HMTID.of("2021-10-15-07-26-44-YYYYYYY");
+            assertEquals(compact, separated);
+            assertEquals(compact, hyphen);
+            assertEquals(compact, hyphenSep);
+        }
+
+        @Test
+        void hashCodeConsistentWithEquals() {
+            var a = HMTID.of("20211015072644_YYYYYYY");
+            var b = HMTID.of("2021-10-15-07-26-44-YYYYYYY");
+            assertEquals(a.hashCode(), b.hashCode());
+        }
+
+        @Test
+        void compareToPreservesChronologicalOrder() {
+            var earlier = HMTID.of("20211015072644_YYYYYYY");
+            var later   = HMTID.of("20211015072645_YYYYYYY"); // 1 second later
+            assertTrue(earlier.compareTo(later) < 0);
+            assertTrue(later.compareTo(earlier) > 0);
+            assertEquals(0, earlier.compareTo(HMTID.of("2021_10_15_07_26_44_YYYYYYY")));
+        }
+
+        @Test
+        void compareToWorksAcrossDifferentSeparators() {
+            var underscore = HMTID.of("20211015072644_YYYYYYY");
+            var hyphen     = HMTID.of("20211015072644-YYYYYYY");
+            assertEquals(0, underscore.compareTo(hyphen));
+        }
+
+        @Test
+        void formatConvertsToAllCombinations() {
+            var id = HMTID.of("20211015072644_YYYYYYY");
+            assertEquals("20211015072644_YYYYYYY", HMTID.format(id, '_', false));
+            assertEquals("20211015072644-YYYYYYY", HMTID.format(id, '-', false));
+            assertEquals("2021_10_15_07_26_44_YYYYYYY", HMTID.format(id, '_', true));
+            assertEquals("2021-10-15-07-26-44-YYYYYYY", HMTID.format(id, '-', true));
+        }
+
+        @Test
+        void formatThrowsOnInvalidSeparator() {
+            var id = HMTID.of("20211015072644_YYYYYYY");
+            assertThrows(IllegalArgumentException.class, () -> HMTID.format(id, '@', false));
+        }
+
+        @Test
+        void monotonicFactoryDefaultReturnsGenerator() {
+            assertNotNull(HMTID.monotonicFactory());
+        }
+
+        @Test
+        void monotonicFactoryWithInvalidSeparatorThrows() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> HMTID.monotonicFactory(new SecureRandom()::nextDouble, '@', false));
+        }
+
+        @Test
+        void generateReturnsHmtidInstance() {
+            var gen = HMTID.monotonicFactory();
+            var id = gen.generate();
+            assertInstanceOf(HMTID.class, id);
+            assertEquals(22, id.toString().length());
+        }
+
+        @Test
+        void generateWithSeedTimeReturnsHmtidInstance() {
+            var gen = HMTID.monotonicFactory();
+            var id = gen.generate(1634280289042L);
+            assertInstanceOf(HMTID.class, id);
+            assertEquals(Instant.parse("2021-10-15T06:44:49Z"), id.toInstant());
         }
     }
 }
