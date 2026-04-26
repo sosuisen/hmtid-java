@@ -2,38 +2,124 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sosuisha</groupId>
+  <artifactId>hmtid</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>hmtid-java</name>
+  <description>A human-readable monotonic timestamp identifier (HMTID) generator</description>
+  <url>https://github.com/sosuisen/hmtid-java</url>
+  <properties>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <groupId>io.github.sosuisen</groupId>
-    <artifactId>hmtid</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
 
-    <name>hmtid-java</name>
-    <description>A human-readable monotonic timestamp identifier (HMTID) generator</description>
-    <url>https://github.com/sosuisen/hmtid-java</url>
+  <developers>
+    <developer>
+      <id>sosuisen</id>
+      <name>Hidekazu Kubota</name>
+      <email>hidekazu.kubota@gmail.com</email>
+      <organization>Sosuisha</organization>
+      <organizationUrl>https://sosuisha.com</organizationUrl>
+    </developer>
+  </developers>
 
-    <properties>
-        <maven.compiler.release>25</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.11.3</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.11.3</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.3</version>
+        <configuration>
+          <source>25</source>
+          <locale>en_US</locale>
+          <additionalOptions>
+            <!-- skip strict check java doc-->
+            <additionalOption>-Xdoclint:none</additionalOption>
+          </additionalOptions>
+          <notimestamp>true</notimestamp>
+          <bottom>
+            <![CDATA[
+                        <div style="text-align: center; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+                            <p>Copyright &#169; {currentYear} <a href="https://github.com/sosuisen">Hidekazu Kubota</a> All rights reserved.</p>
+                        </div>
+                    ]]>
+          </bottom>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.8</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
-            </plugin>
-        </plugins>
-    </build>
+  <scm>
+    <connection>scm:git:git://github.com/sosuisen/hmtid-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com/sosuisen/hmtid-java.git</developerConnection>
+    <url>https://github.com/sosuisen/hmtid-java/tree/main</url>
+  </scm>
 </project>
