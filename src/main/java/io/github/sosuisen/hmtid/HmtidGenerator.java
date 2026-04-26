@@ -35,7 +35,9 @@ public final class HmtidGenerator {
      *
      * @param seedTime Unix timestamp in milliseconds
      * @return a monotonically increasing HMTID string
-     * @throws IllegalArgumentException if {@code seedTime} is negative or exceeds the maximum encodable time
+     * @throws IllegalArgumentException if {@code seedTime} exceeds the maximum encodable time
+     *         ({@code (1L << 48) - 1} milliseconds); negative values are silently clamped to
+     *         {@code overflowedTime} (which is always &ge; 0)
      */
     public String generate(long seedTime) {
         if (seedTime < overflowedTime) {
@@ -43,6 +45,8 @@ public final class HmtidGenerator {
         }
         if (lastRandom != null && Math.floorDiv(seedTime, 1000) <= Math.floorDiv(lastTime, 1000)) {
             if (Encoding.MAX_RANDOM.equals(lastRandom)) {
+                // Integer division truncates to a whole-second boundary, matching the TypeScript
+                // Math.floor semantics for the second granularity used by the monotonicity comparison.
                 lastTime = (seedTime / 1000 + 1) * 1000;
                 overflowedTime = lastTime;
                 lastRandom = Encoding.MIN_RANDOM;

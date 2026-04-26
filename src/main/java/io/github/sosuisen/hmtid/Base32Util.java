@@ -46,8 +46,8 @@ final class Base32Util {
     static String encodeRandom(int len, DoubleSupplier prng) {
         var sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            sb.insert(0, randomChar(prng));
+            sb.append(randomChar(prng));
         }
-        return sb.toString();
+        return sb.reverse().toString();
     }
 }
