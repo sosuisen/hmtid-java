@@ -35,6 +35,7 @@ public final class HmtidGenerator {
      *
      * @param seedTime Unix timestamp in milliseconds
      * @return a monotonically increasing HMTID string
+     * @throws IllegalArgumentException if {@code seedTime} is negative or exceeds the maximum encodable time
      */
     public String generate(long seedTime) {
         if (seedTime < overflowedTime) {
