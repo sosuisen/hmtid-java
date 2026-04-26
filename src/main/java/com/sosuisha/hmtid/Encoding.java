@@ -1,4 +1,4 @@
-package io.github.sosuisen.hmtid;
+package com.sosuisha.hmtid;
 
 final class Encoding {
     static final String CHARS = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -8,5 +8,6 @@ final class Encoding {
     static final String MAX_RANDOM = "ZZZZZZZ";
     static final String MIN_RANDOM = "0000000";
 
-    private Encoding() {}
+    private Encoding() {
+    }
 }

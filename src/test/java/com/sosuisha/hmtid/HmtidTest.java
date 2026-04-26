@@ -1,4 +1,4 @@
-package io.github.sosuisen.hmtid;
+package com.sosuisha.hmtid;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,13 +32,13 @@ class HmtidTest {
         @Test
         void throwsWhenIndexIsOutOfBounds() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.replaceCharAt("ABCDE", 10, 'X'));
+                    () -> Base32Util.replaceCharAt("ABCDE", 10, 'X'));
         }
 
         @Test
         void throwsWhenIndexIsNegative() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.replaceCharAt("ABCDE", -1, 'X'));
+                    () -> Base32Util.replaceCharAt("ABCDE", -1, 'X'));
         }
     }
 
@@ -62,21 +62,22 @@ class HmtidTest {
         @Test
         void throwsWhenItCannotIncrement() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.incrementBase32("ZZZ"));
+                    () -> Base32Util.incrementBase32("ZZZ"));
         }
 
         @Test
         void throwsOnInvalidCharacter() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.incrementBase32("A1_Z"));
+                    () -> Base32Util.incrementBase32("A1_Z"));
         }
 
-        // Java-specific: TypeScript's loop reaches str[-1] (undefined) for empty strings;
+        // Java-specific: TypeScript's loop reaches str[-1] (undefined) for empty
+        // strings;
         // Java's --index loop exits immediately when length is 0, so done stays false.
         @Test
         void throwsOnEmptyString() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.incrementBase32(""));
+                    () -> Base32Util.incrementBase32(""));
         }
     }
 
@@ -100,13 +101,13 @@ class HmtidTest {
         @Test
         void throwsWhenTimeIsNegative() {
             assertThrows(IllegalArgumentException.class,
-                () -> TimeEncoder.encodeTime(-1L, '_', false));
+                    () -> TimeEncoder.encodeTime(-1L, '_', false));
         }
 
         @Test
         void throwsWhenTimeExceedsMaximum() {
             assertThrows(IllegalArgumentException.class,
-                () -> TimeEncoder.encodeTime(1L << 48, '_', false));
+                    () -> TimeEncoder.encodeTime(1L << 48, '_', false));
         }
 
         // Java-specific: verify UTC formatting from the Unix epoch base.
@@ -125,14 +126,14 @@ class HmtidTest {
             for (int i = 0; i < 320_000; i++) {
                 var ch = Base32Util.randomChar(prng);
                 assertTrue(Encoding.CHARS.indexOf(ch) >= 0,
-                    "char '" + ch + "' not in Crockford Base32 encoding");
+                        "char '" + ch + "' not in Crockford Base32 encoding");
             }
         }
 
         @Test
         void throwsWhenPrngReturnsOne() {
             assertThrows(IllegalArgumentException.class,
-                () -> Base32Util.randomChar(() -> 1.0));
+                    () -> Base32Util.randomChar(() -> 1.0));
         }
     }
 

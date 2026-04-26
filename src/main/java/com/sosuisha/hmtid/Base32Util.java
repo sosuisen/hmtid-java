@@ -1,9 +1,10 @@
-package io.github.sosuisen.hmtid;
+package com.sosuisha.hmtid;
 
 import java.util.function.DoubleSupplier;
 
 final class Base32Util {
-    private Base32Util() {}
+    private Base32Util() {
+    }
 
     /**
      * Replaces the character at {@code index} in {@code str} with {@code ch}.
@@ -27,9 +28,11 @@ final class Base32Util {
      *
      * @param str Crockford Base32 string to increment
      * @return incremented string
-     * @throws IllegalArgumentException if {@code str} contains a character outside the
-     *         Crockford Base32 alphabet, or if all characters are already {@code 'Z'}
-     *         and the increment overflows
+     * @throws IllegalArgumentException if {@code str} contains a character outside
+     *                                  the
+     *                                  Crockford Base32 alphabet, or if all
+     *                                  characters are already {@code 'Z'}
+     *                                  and the increment overflows
      */
     static String incrementBase32(String str) {
         var result = str;
@@ -59,7 +62,8 @@ final class Base32Util {
      *
      * @param prng PRNG returning values in {@code [0.0, 1.0)}
      * @return a random character from the Crockford Base32 alphabet
-     * @throws IllegalArgumentException if {@code prng} returns {@code 1.0}, violating its contract
+     * @throws IllegalArgumentException if {@code prng} returns {@code 1.0},
+     *                                  violating its contract
      */
     static char randomChar(DoubleSupplier prng) {
         var rand = (int) Math.floor(prng.getAsDouble() * Encoding.LEN);
