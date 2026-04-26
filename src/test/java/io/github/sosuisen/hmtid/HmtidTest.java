@@ -208,4 +208,24 @@ class HmtidTest {
             assertEquals("20211015072644_YYYYYZ1", gen.generate(time)); // fourth
         }
     }
+
+    @Nested
+    class MonotonicityWithSeedTime {
+        @Test
+        void callSequenceWithVariousSeedTimes() {
+            var gen = Hmtid.monotonicFactory(() -> 0.96);
+            // first call — new second
+            assertEquals("20160730223616_YYYYYYY", gen.generate(1469918176385L));
+            // second call with the same time — increment
+            assertEquals("20160730223616_YYYYYYZ", gen.generate(1469918176385L));
+            // third call with time less than lastTime — still same second
+            assertEquals("20160730223616_YYYYYZ0", gen.generate(100000000L));
+            // fourth call with even smaller time — still same second
+            assertEquals("20160730223616_YYYYYZ1", gen.generate(10000L));
+            // fifth call with 1ms greater, still same second
+            assertEquals("20160730223616_YYYYYZ2", gen.generate(1469918176386L));
+            // sixth call with 1000ms greater — new second, fresh random
+            assertEquals("20160730223617_YYYYYYY", gen.generate(1469918177385L));
+        }
+    }
 }
