@@ -1,5 +1,7 @@
 package io.github.sosuisen.hmtid;
 
+import java.util.function.DoubleSupplier;
+
 final class Base32Util {
     private Base32Util() {}
 
@@ -31,5 +33,21 @@ final class Base32Util {
             return result;
         }
         throw new IllegalArgumentException("[hmtid] cannot increment this string");
+    }
+
+    static char randomChar(DoubleSupplier prng) {
+        var rand = (int) Math.floor(prng.getAsDouble() * Encoding.LEN);
+        if (rand == Encoding.LEN) {
+            rand = Encoding.LEN - 1;
+        }
+        return Encoding.CHARS.charAt(rand);
+    }
+
+    static String encodeRandom(int len, DoubleSupplier prng) {
+        var sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.insert(0, randomChar(prng));
+        }
+        return sb.toString();
     }
 }

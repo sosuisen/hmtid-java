@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.DoubleSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -106,6 +107,35 @@ class HmtidTest {
         @Test
         void epochProducesExpectedResult() {
             assertEquals("19700101000000", TimeEncoder.encodeTime(0L, '_', false));
+        }
+    }
+
+    @Nested
+    class RandomChar {
+        @Test
+        void shouldAlwaysReturnValidBase32Char() {
+            DoubleSupplier prng = new SecureRandom()::nextDouble;
+            for (int i = 0; i < 320_000; i++) {
+                var ch = Base32Util.randomChar(prng);
+                assertTrue(Encoding.CHARS.indexOf(ch) >= 0,
+                    "char '" + ch + "' not in Crockford Base32 encoding");
+            }
+        }
+    }
+
+    @Nested
+    class EncodeRandom {
+        @Test
+        void shouldReturnCorrectLength() {
+            DoubleSupplier prng = new SecureRandom()::nextDouble;
+            assertEquals(12, Base32Util.encodeRandom(12, prng).length());
+        }
+
+        @Test
+        void shouldOnlyContainValidBase32Characters() {
+            DoubleSupplier prng = new SecureRandom()::nextDouble;
+            var result = Base32Util.encodeRandom(100, prng);
+            assertTrue(result.matches("[0-9ABCDEFGHJKMNPQRSTVWXYZ]+"));
         }
     }
 }
