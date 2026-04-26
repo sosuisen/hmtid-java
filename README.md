@@ -61,8 +61,8 @@ generator.generate() // 20211013090003_XER13D3
 ### Import
 
 ```java
-import io.github.sosuisen.hmtid.Hmtid;
-import io.github.sosuisen.hmtid.HmtidGenerator;
+import com.sosuisha.hmtid.Hmtid;
+import com.sosuisha.hmtid.HmtidGenerator;
 ```
 
 ## Usage
