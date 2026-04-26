@@ -228,4 +228,28 @@ class HmtidTest {
             assertEquals("20160730223617_YYYYYYY", gen.generate(1469918177385L));
         }
     }
+
+    @Nested
+    class ForceIncrementSeedTime {
+        @Test
+        void overflowAdvancesTimestampByOneSecond() {
+            var gen = Hmtid.monotonicFactory(() -> 0.99);
+            // 1st call — new second, random fills with Z
+            assertEquals("20160730223616_ZZZZZZZ", gen.generate(1469918176385L));
+            // 2nd call same time — MAX_RANDOM overflow, advance 1 sec
+            assertEquals("20160730223617_0000000", gen.generate(1469918176385L));
+            // 3rd call with very old time — overflowedTime clamps it
+            assertEquals("20160730223617_0000001", gen.generate(100000000L));
+            // 4th call with tiny time — still clamped
+            assertEquals("20160730223617_0000002", gen.generate(10000L));
+            // 5th call 1ms after original — still in overflowed second
+            assertEquals("20160730223617_0000003", gen.generate(1469918176386L));
+            // 6th call 1000ms after original — still in overflowed second
+            assertEquals("20160730223617_0000004", gen.generate(1469918177385L));
+            // 7th call 1001ms after original — still in overflowed second
+            assertEquals("20160730223617_0000005", gen.generate(1469918177386L));
+            // 8th call 2000ms after original — new second, fresh Z random
+            assertEquals("20160730223618_ZZZZZZZ", gen.generate(1469918178385L));
+        }
+    }
 }
