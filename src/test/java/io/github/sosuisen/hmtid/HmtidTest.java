@@ -138,4 +138,61 @@ class HmtidTest {
             assertTrue(result.matches("[0-9ABCDEFGHJKMNPQRSTVWXYZ]+"));
         }
     }
+
+    @Nested
+    class Generator {
+        @Test
+        void shouldReturnCorrectLength() {
+            var gen = Hmtid.monotonicFactory();
+            assertEquals(22, gen.generate().length());
+        }
+
+        @Test
+        void shouldReturnCorrectLengthWhenSeparatorIsHyphen() {
+            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
+            assertEquals(22, gen.generate().length());
+        }
+
+        @Test
+        void shouldUseHyphenAsSeparatorBetweenTimestampAndRandomComponent() {
+            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', false);
+            assertEquals("20211015070216-", gen.generate(1634281336026L).substring(0, 15));
+        }
+
+        @Test
+        void shouldReturnCorrectLengthWhenSeparatedByHyphenWithTimeSeparation() {
+            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
+            assertEquals(27, gen.generate().length());
+        }
+
+        @Test
+        void shouldReturnExpectedTimeComponentResult() {
+            var gen = Hmtid.monotonicFactory();
+            assertEquals("20211015070216_", gen.generate(1634281336026L).substring(0, 15));
+        }
+
+        @Test
+        void shouldReturnExpectedTimeComponentSeparatedByHyphen() {
+            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '-', true);
+            assertEquals("2021-10-15-07-02-16-", gen.generate(1634281336026L).substring(0, 20));
+        }
+
+        @Test
+        void shouldReturnExpectedTimeComponentSeparatedByUnderbar() {
+            var gen = Hmtid.monotonicFactory(new SecureRandom()::nextDouble, '_', true);
+            assertEquals("2021_10_15_07_02_16_", gen.generate(1634281336026L).substring(0, 20));
+        }
+
+        @Test
+        void shouldGenerateIdsInMonotonicallyIncreasingOrder() {
+            var gen = Hmtid.monotonicFactory();
+            var ids = new ArrayList<String>();
+            for (int i = 0; i < 100; i++) {
+                ids.add(gen.generate());
+            }
+            var sorted = new ArrayList<>(ids);
+            Collections.sort(sorted);
+            assertEquals(ids, sorted);
+        }
+    }
 }
