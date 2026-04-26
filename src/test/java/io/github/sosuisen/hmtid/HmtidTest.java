@@ -195,4 +195,17 @@ class HmtidTest {
             assertEquals(ids, sorted);
         }
     }
+
+    @Nested
+    class MonotonicityWithoutSeedTime {
+        @Test
+        void callSequenceWithFrozenTime() {
+            var gen = Hmtid.monotonicFactory(() -> 0.96);
+            var time = 1634282804081L; // 2021-10-15 07:26:44 UTC
+            assertEquals("20211015072644_YYYYYYY", gen.generate(time)); // first
+            assertEquals("20211015072644_YYYYYYZ", gen.generate(time)); // second
+            assertEquals("20211015072644_YYYYYZ0", gen.generate(time)); // third
+            assertEquals("20211015072644_YYYYYZ1", gen.generate(time)); // fourth
+        }
+    }
 }
