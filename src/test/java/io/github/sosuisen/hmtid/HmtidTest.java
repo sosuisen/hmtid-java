@@ -71,4 +71,41 @@ class HmtidTest {
                 () -> Base32Util.incrementBase32(""));
         }
     }
+
+    @Nested
+    class EncodeTime {
+        @Test
+        void returnsExpectedEncodedResult() {
+            assertEquals("20211015064449", TimeEncoder.encodeTime(1634280289042L, '_', false));
+        }
+
+        @Test
+        void separatesNumbersByHyphen() {
+            assertEquals("2021-10-15-06-44-49", TimeEncoder.encodeTime(1634280289042L, '-', true));
+        }
+
+        @Test
+        void separatesNumbersByUnderbar() {
+            assertEquals("2021_10_15_06_44_49", TimeEncoder.encodeTime(1634280289042L, '_', true));
+        }
+
+        @Test
+        void throwsWhenTimeIsNegative() {
+            assertThrows(IllegalArgumentException.class,
+                () -> TimeEncoder.encodeTime(-1L, '_', false));
+        }
+
+        @Test
+        void throwsWhenTimeExceedsMaximum() {
+            assertThrows(IllegalArgumentException.class,
+                () -> TimeEncoder.encodeTime(1L << 48, '_', false));
+        }
+
+        // Java-specific: verify UTC formatting from the Unix epoch base.
+        // TypeScript's number type doesn't have a meaningful "0" boundary test.
+        @Test
+        void epochProducesExpectedResult() {
+            assertEquals("19700101000000", TimeEncoder.encodeTime(0L, '_', false));
+        }
+    }
 }
