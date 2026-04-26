@@ -30,8 +30,15 @@ class HmtidTest {
         }
 
         @Test
-        void returnsOriginalStringWhenIndexIsOutOfBounds() {
-            assertEquals("ABCDE", Base32Util.replaceCharAt("ABCDE", 10, 'X'));
+        void throwsWhenIndexIsOutOfBounds() {
+            assertThrows(IllegalArgumentException.class,
+                () -> Base32Util.replaceCharAt("ABCDE", 10, 'X'));
+        }
+
+        @Test
+        void throwsWhenIndexIsNegative() {
+            assertThrows(IllegalArgumentException.class,
+                () -> Base32Util.replaceCharAt("ABCDE", -1, 'X'));
         }
     }
 
@@ -120,6 +127,12 @@ class HmtidTest {
                 assertTrue(Encoding.CHARS.indexOf(ch) >= 0,
                     "char '" + ch + "' not in Crockford Base32 encoding");
             }
+        }
+
+        @Test
+        void throwsWhenPrngReturnsOne() {
+            assertThrows(IllegalArgumentException.class,
+                () -> Base32Util.randomChar(() -> 1.0));
         }
     }
 
