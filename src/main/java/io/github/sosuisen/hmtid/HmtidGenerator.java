@@ -13,6 +13,8 @@ public final class HmtidGenerator {
     private final boolean separateTime;
     private long lastTime = 0;
     private String lastRandom = null;
+    // The artificially-advanced timestamp set when the random component overflows (ZZZZZZZ → +1 s).
+    // seedTime is clamped to this value until the real clock catches up, preserving monotonicity.
     private long overflowedTime = 0;
 
     HmtidGenerator(DoubleSupplier prng, char separator, boolean separateTime) {

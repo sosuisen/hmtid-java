@@ -6,6 +6,19 @@ import java.time.ZoneOffset;
 final class TimeEncoder {
     private TimeEncoder() {}
 
+    /**
+     * Encodes a Unix timestamp in milliseconds as a UTC date-time string (YYYYMMDDHHMMSS).
+     *
+     * @param now          Unix timestamp in milliseconds; must be in {@code [0, (1L << 48) - 1]}
+     * @param separator    separator character inserted between each time component when
+     *                     {@code separateTime} is {@code true}
+     * @param separateTime if {@code true}, inserts {@code separator} between each time component
+     *                     (e.g. {@code YYYY_MM_DD_HH_MM_SS})
+     * @return 14-character date-time string, or 19-character string when {@code separateTime}
+     *         is {@code true}
+     * @throws IllegalArgumentException if {@code now} is negative or exceeds
+     *         {@code (1L << 48) - 1} milliseconds
+     */
     static String encodeTime(long now, char separator, boolean separateTime) {
         if (now > Encoding.TIME_MAX) {
             throw new IllegalArgumentException("[hmtid] cannot encode time greater than " + Encoding.TIME_MAX);
