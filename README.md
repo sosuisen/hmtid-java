@@ -72,7 +72,7 @@ HmtidGenerator generator = Hmtid.monotonicFactory();
 generator.generate() // 20211013090001_GEMMVRX
 ```
 
-> **Note:** `HmtidGenerator` is not thread-safe. Use one instance per thread or apply external synchronization.
+> **Note:** `HmtidGenerator` is thread-safe.
 
 ### Seed Time
 

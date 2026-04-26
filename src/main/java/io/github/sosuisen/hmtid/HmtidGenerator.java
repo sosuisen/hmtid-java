@@ -5,7 +5,7 @@ import java.util.function.DoubleSupplier;
 /**
  * Generates monotonically increasing HMTID strings.
  *
- * <p>Not thread-safe; use one instance per thread or apply external synchronization.
+ * <p>Thread-safe.
  */
 public final class HmtidGenerator {
     private final DoubleSupplier prng;
@@ -41,7 +41,7 @@ public final class HmtidGenerator {
      *         ({@code (1L << 48) - 1} milliseconds); negative values are silently clamped to
      *         {@code overflowedTime} (which is always &ge; 0)
      */
-    public String generate(long seedTime) {
+    public synchronized String generate(long seedTime) {
         if (seedTime < overflowedTime) {
             seedTime = overflowedTime;
         }
