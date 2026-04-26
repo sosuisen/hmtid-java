@@ -52,7 +52,7 @@ generator.generate() // 20211013090003_XER13D3
 
 ```xml
 <dependency>
-    <groupId>io.github.sosuisen</groupId>
+    <groupId>com.sosuisha</groupId>
     <artifactId>hmtid</artifactId>
     <version>1.0.0</version>
 </dependency>
