@@ -1,6 +1,7 @@
 # Human-readable Monotonic Timestamp Identifier (HMTID) for Java
 
 > This is a Java port of [hmtid](https://github.com/sosuisen/hmtid)
+> hmtid is a reduced and modified fork of [ulid](https://github.com/ulid/javascript)
 
 - HMTID begins with a 14-digit human-readable timestamp (YYYYMMDDHHMMSS).
   - The timestamps in most IDs, including ulid, are encoded in a shorter form. HMTID does not encode timestamp digits.
