@@ -54,7 +54,7 @@ generator.generate() // 20211013090003_XER13D3
 <dependency>
     <groupId>com.sosuisha</groupId>
     <artifactId>hmtid</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
