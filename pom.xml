@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sosuisha</groupId>
   <artifactId>hmtid</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <packaging>jar</packaging>
   <name>hmtid-java</name>
   <description>A human-readable monotonic timestamp identifier (HMTID) generator</description>
@@ -33,10 +33,25 @@
   </developers>
 
   <dependencies>
+    <!-- Optional: enables automatic String serialization in Jackson.
+         Consumers without Jackson are not affected; the JVM ignores
+         annotations whose classes are absent at runtime. -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.22</version>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>5.11.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.22.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,5 +1,8 @@
 package com.sosuisha.hmtid;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.DateTimeException;
@@ -25,6 +28,11 @@ import java.util.function.DoubleSupplier;
  * <p>Because the canonical form preserves lexicographic = chronological order,
  * {@code HMTID} instances can be placed directly in a {@link java.util.TreeSet}
  * or sorted with {@link java.util.Collections#sort} to obtain time order.
+ *
+ * <p><b>JSON:</b> When Jackson is on the classpath, an {@code HMTID} serializes
+ * to its {@link #toString()} form as a plain JSON string, and deserializes from
+ * that string via {@link #of(String)}. Without Jackson, the annotations are
+ * ignored and nothing changes for other consumers.
  */
 public final class HMTID implements Comparable<HMTID>, Serializable {
 
@@ -109,12 +117,16 @@ public final class HMTID implements Comparable<HMTID>, Serializable {
      *       {@code YYYY{sep}MM{sep}DD{sep}HH{sep}MM{sep}SS{sep}XXXXXXX}</li>
      * </ul>
      *
+     * <p>Also serves as the Jackson creator, so a JSON string deserializes
+     * directly into an {@code HMTID}.
+     *
      * @param s the HMTID string to parse
      * @return parsed {@code HMTID}
      * @throws IllegalArgumentException if {@code s} has invalid length, an invalid or
      *         inconsistent separator, an out-of-range date/time, or random-part characters
      *         outside the Crockford Base32 alphabet
      */
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static HMTID of(String s) {
         return switch (s.length()) {
             case 22 -> parseCompact(s);
@@ -252,8 +264,12 @@ public final class HMTID implements Comparable<HMTID>, Serializable {
      * <p>Note: {@link #equals} is <em>not</em> based on this string — two
      * instances with different separators may be equal. See the class Javadoc.
      *
+     * <p>Also serves as the Jackson value, so an {@code HMTID} serializes to
+     * this string instead of a field-by-field object.
+     *
      * @return HMTID string in its original presentation form
      */
+    @JsonValue
     @Override
     public String toString() {
         return rawString;
